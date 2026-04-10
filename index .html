@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PhishGuard AI — Live Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge"><span class="badge-dot"></span> AI ENGINE ACTIVE · v2.1.0</div>
+    <h1>PhishGuard AI</h1>
+    <p class="subtitle">Real-time phishing detection using heuristic analysis &amp; ML-inspired feature extraction</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="stat-val" id="s1">18,472</div><div class="stat-label">Total Scans</div></div>
+    <div class="stat"><div class="stat-val" id="s2">4,211</div><div class="stat-label">Blocked</div></div>
+    <div class="stat"><div class="stat-val">97.3%</div><div class="stat-label">Accuracy</div></div>
+    <div class="stat"><div class="stat-val" id="s4">62ms</div><div class="stat-label">Avg Speed</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('url',this)">🔗 URL Scanner</button>
+    <button class="tab" onclick="switchTab('email',this)">📧 Email Analyzer</button>
+    <button class="tab" onclick="switchTab('batch',this)">⚡ Batch Scan</button>
+    <button class="tab" onclick="switchTab('ml',this)">🤖 ML Backend</button>
+  </div>
+
+  <!-- URL Panel -->
+  <div class="panel active" id="tab-url">
+    <div class="card">
+      <div class="input-row">
+        <input type="text" id="url-input" placeholder="https://suspicious-link.com/login" onkeydown="if(event.key==='Enter')scanURL()"/>
+        <button class="btn" onclick="scanURL()" id="url-btn">🔍 SCAN</button>
+      </div>
+      <div class="examples">
+        <span class="ex-label">TRY →</span>
+        <span class="example-btn" onclick="setURL('https://paypa1-secure-login.tk/account/verify')">paypa1-secure-login.tk</span>
+        <span class="example-btn" onclick="setURL('http://192.168.50.1/login?ref=paypal')">IP address URL</span>
+        <span class="example-btn" onclick="setURL('https://google.com')">google.com ✓</span>
+        <span class="example-btn" onclick="setURL('https://amazon-account-suspended.ml/confirm-identity')">amazon spoof</span>
+        <span class="example-btn" onclick="setURL('http://secure.bank0famerica.update-credentials.xyz/verify')">bank spoof</span>
+      </div>
+    </div>
+    <div id="url-result"></div>
+  </div>
+
+  <!-- Email Panel -->
+  <div class="panel" id="tab-email">
+    <div class="card">
+      <textarea id="email-input" placeholder="Paste email content here..."></textarea>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn btn-ghost" onclick="loadSample()" style="flex:1">📋 Load Sample Phishing Email</button>
+        <button class="btn" onclick="scanEmail()" id="email-btn" style="flex:2">🔍 ANALYZE EMAIL</button>
+      </div>
+    </div>
+    <div id="email-result"></div>
+  </div>
+
+  <!-- Batch Panel -->
+  <div class="panel" id="tab-batch">
+    <div class="card">
+      <textarea id="batch-input" placeholder="One URL per line:&#10;https://example.com&#10;https://suspicious-site.tk/login&#10;https://google.com" style="min-height:120px"></textarea>
+      <button class="btn" onclick="scanBatch()" id="batch-btn" style="width:100%;margin-top:12px">⚡ SCAN ALL URLs</button>
+    </div>
+    <div id="batch-result"></div>
+  </div>
+
+  <!-- ML Backend Panel -->
+  <div class="panel" id="tab-ml">
+    <div class="card">
+      <div class="ml-header">
+        <div class="ml-badge">🤖 Python ML Backend</div>
+        <p class="ml-desc">
+          Connect to a real Python + scikit-learn backend. Run <code>python app.py</code> locally,
+          then scan URLs through the trained Random Forest model.
+        </p>
+      </div>
+      <div class="input-row" style="margin-top:16px">
+        <input type="text" id="ml-url-input" placeholder="https://suspicious-site.example.com"/>
+        <button class="btn" onclick="scanWithML()" id="ml-btn">🤖 ML SCAN</button>
+      </div>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:12px;color:var(--muted)">Backend:</span>
+        <input type="text" id="ml-endpoint" value="http://localhost:5000/predict" style="flex:1;font-size:12px;padding:8px 12px"/>
+        <button class="btn btn-ghost" style="padding:8px 16px;font-size:12px" onclick="checkMLHealth()">PING</button>
+      </div>
+      <div id="ml-status" class="ml-status hidden"></div>
+    </div>
+    <div id="ml-result"></div>
+    <div class="card" style="margin-top:20px">
+      <div class="indicators-title">📁 REQUIRED PYTHON FILES</div>
+      <div class="file-list">
+        <div class="file-item"><span class="file-icon">🐍</span><span class="file-name">app.py</span><span class="file-desc">Flask API server + prediction endpoint</span></div>
+        <div class="file-item"><span class="file-icon">🧠</span><span class="file-name">model.py</span><span class="file-desc">ML model training with scikit-learn</span></div>
+        <div class="file-item"><span class="file-icon">⚙️</span><span class="file-name">features.py</span><span class="file-desc">Feature extraction engine (30+ features)</span></div>
+        <div class="file-item"><span class="file-icon">📊</span><span class="file-name">train.py</span><span class="file-desc">Dataset generation &amp; model training script</span></div>
+        <div class="file-item"><span class="file-icon">📦</span><span class="file-name">requirements.txt</span><span class="file-desc">Python dependencies</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
